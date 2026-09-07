@@ -596,8 +596,8 @@
             };
          },
          makeLaunchCommand() {
-            // The launch routes are POST-only now (C8: no state-changing route over
-            // GET), so a copy-paste GET URL is no longer valid. Emit the equivalent
+            // Launch routes are POST-only (no state-changing route is reachable via
+            // GET), so a copy-paste GET URL isn't valid. Emit the equivalent
             // `dockside` CLI command instead — it launches via POST and maps the launch
             // form faithfully (dockside create supports every field here). Values are
             // POSIX single-quoted so the command is safe to paste into a shell.

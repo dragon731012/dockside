@@ -43,10 +43,8 @@
    // transform/will-change force this fixed element onto its own GPU compositor
    // layer, cheap insurance against position:fixed jank during reflow-heavy
    // periods elsewhere on the page (e.g. the router's forced scroll-to-top on
-   // navigation). The specific flicker that prompted this bar's investigation
-   // traced to the container list's now-removed enter/leave transition, not a
-   // mobile-engine-specific rendering quirk — it reproduced under desktop
-   // Chrome's device-emulation mode too.
+   // navigation), independent of any mobile-specific rendering quirk — desktop
+   // Chrome's device-emulation mode is subject to the same reflow-heavy periods.
    .bottom-nav {
       height: 56px;
       padding: 0;

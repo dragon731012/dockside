@@ -406,10 +406,9 @@ sub _handler ($r, $protocol) { # nginx request object; protocol = 'http' | 'http
    }
 
    # Serve the Vue client bundle's compiled CSS pre-auth too, so the (also pre-auth)
-   # login page can link to it same-origin instead of an external CDN (see
-   # send_branded_page) — avoiding a cross-origin fetch entirely rather than just
-   # relaxing its CORS/SRI attributes. main.js has no pre-auth reader, so it stays
-   # gated below with the rest of the authenticated app's assets.
+   # login page can link to it same-origin (see send_branded_page), avoiding any
+   # cross-origin fetch. main.js has no pre-auth reader, so it stays gated below
+   # with the rest of the authenticated app's assets.
    if( $route eq '/assets/main.css' ) {
       $r->status(200);
       $r->header_out('Cache-Control', 'public, max-age=31536000, immutable');
@@ -445,8 +444,8 @@ sub _handler ($r, $protocol) { # nginx request object; protocol = 'http' | 'http
    # Enable for verbose request logging:
    # flog("App: route=$route; User=" . $User->username);
 
-   # Serve the Vue client bundle's JS as a separate, cacheable asset rather than inlining
-   # it into every page. Placed below the auth gate so it is served to authenticated users
+   # Serve the Vue client bundle's JS as a separate, cacheable asset. Placed below
+   # the auth gate so it is served to authenticated users
    # only (main.css has its own pre-auth route above, for the login page's benefit too).
    # nginx gzips the response on the fly (application/javascript is in gzip_types); the ?v=
    # cache-buster on the reference below changes whenever the file changes, so a long
@@ -468,8 +467,8 @@ sub _handler ($r, $protocol) { # nginx request object; protocol = 'http' | 'http
       $r->send_http_header("text/html");
       $r->print( get_header() );
       # main.css served as a separate cacheable, gzip-compressible asset (see the
-      # /assets/main.(js|css) route above), not inlined. Render-blocking in <head> like the
-      # inline <style> it replaces, so styles still apply before first paint.
+      # /assets/main.(js|css) route above). Linked as a render-blocking <link> in
+      # <head>, so styles apply before first paint.
       my $css_v = _asset_version('main.css');
       $r->print( qq{<link rel="stylesheet" href="/assets/main.css?v=$css_v">\n} );
 
@@ -507,7 +506,7 @@ sub _handler ($r, $protocol) { # nginx request object; protocol = 'http' | 'http
       $r->print( '<body data-spy="scroll" data-target=".sidebar">' . "\n" );
       $r->print( "<div id='app'><router-view></router-view></div>\n" );
       # main.js served as a separate cacheable, gzip-compressible asset (see the
-      # /assets/main.(js|css) route above) instead of inlining ~3.8 MiB into every page.
+      # /assets/main.(js|css) route above), so it isn't duplicated into every page response.
       my $js_v = _asset_version('main.js');
       $r->print( qq{<script src="/assets/main.js?v=$js_v"></script>\n} );
       $r->print("</body></html>\n");
