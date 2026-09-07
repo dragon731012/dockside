@@ -73,6 +73,50 @@ PYTHONUNBUFFERED=1 \
 ```
 Run modules individually with `--only NN` for targeted testing.
 
+## Writing code and commit comments
+
+Code comments and commit messages must **strictly** describe the current code's behaviour as
+if the current code had been the intended end-state all along — never as a diff against, or a
+retelling of the journey from, what came before. Strictly avoid narrative about: previous/prior
+behaviour ("used to do X", "the old version had Y", "no longer Z"); the process that produced
+the change ("refactored to...", "switched from...to...", "fixed a bug where..."); or things
+tested/verified along the way ("confirmed live", "tested via...", "verified that..."). None of
+that describes what the code *is* — it describes how it got there, and it rots the moment the
+prior state is no longer live in anyone's head.
+
+The **only** exception: documenting a specific edge case the current code depends on, where
+*without* that documentation there's a real risk a future change silently regresses it — e.g. a
+non-obvious runtime/browser quirk, an ordering requirement, or an external contract the code
+must keep satisfying. Even then, phrase it as a property of the current code ("X must happen
+before Y, because Z" / "must stay a `<foo>` because the caller assumes..."), not as an account of
+the bug that revealed it or how it was fixed.
+
+This applies everywhere — inline code comments, doc comments, and commit messages alike. See
+"Commit messages" below for the specific, narrower case of branch-provenance/lineage narrative.
+
+Scope: this repo only — other repos have their own conventions; don't apply this rule there,
+and don't edit their docs when sweeping this one.
+
+## Repo scope: reference only this repo's own files
+
+Docs, code comments, ADRs, and commit messages here should reference only files within this
+repo — never a file that happens to exist elsewhere in the workspace (another checked-out repo, a
+sibling directory), whatever it is. If something relevant lives outside this repo, incorporate
+the point that's actually relevant here directly, in this repo's own words, rather than gesturing
+at such non-repo files.
+
+## Sweep for violations of the two rules above before committing
+
+Before committing non-trivial work — not only for a large branch-landing effort — consider
+running a compliance sweep of the changed files against the two rules above (no narrative
+history in comments; reference only this repo's own files). Judge each file by its actual
+meaning rather than a keyword search: a keyword list misses paraphrased narrative, and can only
+search for an external reference by a name already known in advance, which is exactly the case a
+genuine violation defeats. See `docs/developing/curated-merge-process.md`'s "Compliance sweep"
+section for the full methodology — reading full files inside disposable per-subagent context so
+only a compact findings report survives, parallelised by area, on a cheaper model for the bulk
+pass — which applies just as well to an ordinary feature branch as to a large curated landing.
+
 ## Commit authorship
 
 Every commit's **Author** must be the real human contributor — never
